@@ -1,0 +1,23 @@
+﻿    <TelerikNotification @ref="Notification"
+                         Class="demo-notification"
+                         HorizontalPosition="@NotificationHorizontalPosition.Right"
+                         VerticalPosition="@NotificationVerticalPosition.Bottom"></TelerikNotification>
+
+
+<style>
+    .demo-notification {
+        position: absolute;
+        z-index: 10000000;
+    }
+
+
+    .demo-notification .k-notification {
+            width: 530px;
+        }
+
+
+    .k-notification-container {
+        margin: 6px 0;
+    }
+
+</style>

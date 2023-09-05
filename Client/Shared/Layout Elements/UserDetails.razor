@@ -1,0 +1,30 @@
+﻿@if (UserModel != null)
+{
+
+    <TelerikForm Model="@UserModel"
+             OnValidSubmit="@UpdateAsync"
+             Size="@ThemeConstants.Form.Size.Small"
+             AutoComplete="off"
+             ButtonsLayout="@FormButtonsLayout.End">
+        <FormValidation>
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+        </FormValidation>
+        <FormItems>
+            <FormItem Field="@nameof(UserModel.Name)"></FormItem>
+            <FormItem Field="@nameof(UserModel.Description)"></FormItem>
+            <FormItem Field="@nameof(UserModel.IsActive)"></FormItem>
+            <FormItem Field="@nameof(UserModel.IsAdmin)"></FormItem>
+            <FormItem Field="@nameof(UserModel.Password)">
+                <Template>
+                    <label for="pass" class="k-label k-form-label">Šifra*:</label>
+                    <TelerikTextBox Id="pass" @bind-Value="@UserModel.Password" Password="true"></TelerikTextBox>
+                    <TelerikValidationMessage For="@(() => UserModel.Password)"></TelerikValidationMessage>
+                </Template>
+            </FormItem>
+        </FormItems>
+        <FormButtons>
+            <TelerikButton Class="mt-4" ButtonType="ButtonType.Submit" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Ažuriraj</TelerikButton>
+        </FormButtons>
+    </TelerikForm>
+
+}

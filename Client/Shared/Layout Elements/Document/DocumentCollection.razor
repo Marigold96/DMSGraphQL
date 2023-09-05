@@ -1,0 +1,216 @@
+﻿@using global::Common.Models;
+@using static Telerik.Blazor.ThemeConstants.AutoComplete;
+
+<div style="height: 100%;">
+    <div class="d-flex justify-content-between simple-filter mb-2" style="gap: 4px;">
+        @if (_smartSearchVisible)
+        {
+            <TelerikAutoComplete @ref="@SmartAutoComplete"
+                             FillMode="@FillMode.Flat"
+                             Id="AC1"
+                             Placeholder="Pretraži..."
+                             Value="@_smartSearchText"
+                             ValueChanged="@SmartSearchTextChanged"
+                             Data="@SmartSearchData"
+                             DebounceDelay="300" />
+        }
+        else
+        {
+            <TelerikTextBox @ref="@SmartTextBox"
+                        Placeholder="Pretraži..."
+                        FillMode="@FillMode.Flat"
+                        Value="@_smartSearchText"
+                        ValueChanged="@SmartSearchTextBoxTextChanged"
+                        DebounceDelay="300" />
+        }
+
+        <TelerikButton Title="Filter"
+            Icon="@SvgIcon.Filter"
+            FillMode="@FillMode.Flat"
+            OnClick="@(async() => { if (_advancedSortShown) { _advancedSortShown = false; SortContainerRef?.ToggleAsync(); } FilterContainerRef?.ToggleAsync(); _advancedFilterShown = !_advancedFilterShown; })" />
+
+        <TelerikButton Title="Sort"
+            Icon="@SvgIcon.SortAsc"
+            FillMode="@FillMode.Flat"
+            OnClick="@(async() => { if (_advancedFilterShown) { _advancedFilterShown = false; FilterContainerRef?.ToggleAsync(); } SortContainerRef?.ToggleAsync(); _advancedSortShown = !_advancedSortShown; })" />
+
+        <TelerikButton Title="Dodati"
+            Icon="@SvgIcon.Plus"
+            FillMode="@FillMode.Flat"
+            OnClick="@(() => DocumentCreationRef?.ShowCreationDialog())" />
+    </div>
+
+    <div class="mt-sm text-center kd-border document-container" style="position: relative; height: 100%; width: 100%;">
+        @if (_isBusy)
+        {
+            <TelerikLoader />
+        }
+        else if (!Documents.Any())
+        {
+            <div>Nema podataka</div>
+        }
+        else
+        {
+            <TelerikListView Data="@Documents">
+                <Template>
+                    <div class="list-item p-1 d-flex @(context == SelectedItem ? "selected" : "")"
+                            style="border-bottom: 1px solid lightgrey; width: 100%; gap: 12px;"
+                            @onclick="@((MouseEventArgs mouseEventArgs) => OnSelectedItemChanged(context))">
+
+                        <div style="width: 35px; align-self: center;">
+                            <img src="images/extensions/@context.Extension.Icon" width="32" height="32" />
+                        </div>
+                        <div style="display: flex; flex-direction: column; width: 100%;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div style="align-self: center;">
+                                    @context.Name
+                                </div>
+                                <div>
+                                    <TelerikButton Class="download-action"
+                                        Size="@Size.Small" 
+                                        FillMode="@FillMode.Flat"
+                                        Icon="@(_isDownloading && SelectedItem == context ? "" : SvgIcon.Download)" 
+                                        OnClick="@(() => OnItemDownload(context))" Enabled="@(!_isDownloading || SelectedItem != context)">
+                                        <TelerikLoader Size="@Size.Small" Visible="@(_isDownloading && SelectedItem == context)"/> 
+                                    </TelerikButton>
+
+                                    @if (UserMe?.Id == context.CreationUser.Id)
+                                    {
+                                        <TelerikSplitButton Size="@Size.Small" FillMode="@FillMode.Flat" >
+                                            <SplitButtonItems>
+                                                <SplitButtonItem Class="menu-item-actions" Icon="@SvgIcon.TrackChanges" OnClick="@(() => DocumentCreationRef?.ShowCreationDialog(context))">Izmeniti</SplitButtonItem>
+                                                <SplitButtonItem Class="menu-item-actions" Icon="@SvgIcon.Share" OnClick="@(() => ShareDocumentRef?.ShowShareDialog(context))">Podeliti</SplitButtonItem>
+                                                <SplitButtonItem Class="menu-item-actions" Icon="@SvgIcon.Trash" OnClick="@(() => DeleteDocumentRef?.ShowDeleteDialog(context))">Obrisati</SplitButtonItem>
+                                            </SplitButtonItems>
+
+                                            <SplitButtonSettings>
+                                                <SplitButtonPopupSettings Height=""></SplitButtonPopupSettings>
+                                            </SplitButtonSettings>
+                                        </TelerikSplitButton>
+                                    }
+                                </div>
+                            </div>
+
+                            <div style="font-size: 0.7rem; text-align: left;">
+                                <span>
+                                    <i class="k-icon k-i-parameter-date-time" style="font-size: 15px;" />
+                                    <span style="vertical-align: middle;"> @context.CreationTime.ToShortDateString() </span>
+                                </span>
+                                <span style="margin-left: 8px;">
+                                    -
+                                </span>
+                                <span style="margin-left: 8px;">
+                                    <i class="k-icon k-i-user" style="font-size: 12px;" />
+                                    <span style="vertical-align: middle;"> @context.CreationUser.Description </span>
+                                </span>
+                                <span style="margin-left: 8px;">
+                                    -
+                                </span>
+                                <span style="margin-left: 8px;">
+                                    @context.SizeKB KB 
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </Template>
+            </TelerikListView>
+        }
+
+        <TelerikAnimationContainer @ref="@FilterContainerRef" Width="100%" Height="97%" AnimationType="@AnimationType.SlideLeft" Class="k-popup filter-container">
+            <div style="width: 35%; background-color: #000000; opacity: 0.5;" @onclick="@(async() => { FilterContainerRef?.ToggleAsync(); _advancedFilterShown = false; })">
+            </div>
+            <div style="width: 65%; background-color: white;display: flex; flex-direction: column; justify-content: space-between; padding: 12px;">
+                <div class="k-form k-form-md k-form-vertical">
+                    <div class="mb-2 k-form-field">
+                        <TelerikFloatingLabel Text="Naziv" Class="custom-label">
+                            <div class="k-form-field-wrap">
+                                <TelerikTextBox FillMode="@FillMode.Flat" @bind-Value="@DocumentQuery.Name" />
+                            </div>
+                        </TelerikFloatingLabel>
+                    </div>
+
+                    <div class="mb-2 k-form-field">
+                        <TelerikFloatingLabel Text="@(DocumentTypeValidation ? "" : "Tip")" Class="custom-label">
+                            <div class="k-form-field-wrap">
+                                <TelerikComboBox Data="@DocumentTypes"
+                                                FillMode="@FillMode.Flat"
+                                                Enabled="@(!DocumentTypeValidation)"
+                                                TItem="DocumentTypeModel"
+                                                TValue="Guid?"
+                                                TextField="@(nameof(DocumentTypeModel.Name))"
+                                                ValueField="@(nameof(DocumentTypeModel.Id))"
+                                                Value="@SelectedDocumentType.Id"
+                                                ValueChanged="@DocumentTypeChangedHandler">
+                                    <ComboBoxSettings>
+                                        <ComboBoxPopupSettings Class="combo-popup" Height="auto" MaxHeight="200px" />
+                                    </ComboBoxSettings>
+                                </TelerikComboBox>
+                            </div>
+                        </TelerikFloatingLabel>
+                    </div>
+
+                    <div class="mb-2 k-form-field">
+                        <TelerikFloatingLabel Text="Kreator" Class="custom-label">
+                            <div class="k-form-field-wrap">
+                                <TelerikAutoComplete ClearButton="true"
+                                                    Filterable="true"
+                                                    FillMode="@FillMode.Flat"
+                                                    OnRead="@OnReadUsersAsync"
+                                                    TItem="UserModel"
+                                                    Placeholder="Pretraži..."
+                                                    ValueField="@(nameof(UserModel.Name))"
+                                                    Value="@SelectedCreator.Name"
+                                                    ValueChanged="@OnUserValueChangedHandler">
+                                    <AutoCompleteSettings>
+                                        <AutoCompletePopupSettings Class="combo-popup" Height="auto" MaxHeight="200px" />
+                                    </AutoCompleteSettings>
+                                </TelerikAutoComplete>
+                            </div>
+                        </TelerikFloatingLabel>
+                    </div>
+
+                    <div class="mb-2 k-form-field">
+                        <TelerikFloatingLabel Text="Datum kreiranja" Class="custom-label">
+                            <div class="k-form-field-wrap">
+                                <TelerikDatePicker FillMode="@FillMode.Flat" Value="@DocumentQuery.CreationTime" ValueChanged="@((DateTime? value) => DocumentQuery.CreationTime = value)" />
+                            </div>
+                        </TelerikFloatingLabel>
+                    </div>
+
+                    <div class="mb-2 k-form-field">
+                        <TelerikFloatingLabel Text="Veličina" Class="custom-label">
+                            <div class="k-form-field-wrap">
+                                <TelerikNumericTextBox FillMode="@FillMode.Flat" Decimals="2" Value="@DocumentQuery.Size" ValueChanged="@((decimal? value) => DocumentQuery.Size = value)" />
+                            </div>
+                        </TelerikFloatingLabel>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px;">
+                    <TelerikButton OnClick="@ClearFilterAsync">
+                        <i class="k-icon k-i-filter-clear" />
+                        Očisti
+                    </TelerikButton>
+                    <TelerikButton OnClick="@FilterDocuments" ThemeColor="primary">
+                        <i class="k-icon k-i-search" />
+                        Pretraži
+                    </TelerikButton>
+                </div>
+            </div>
+        </TelerikAnimationContainer>
+        <TelerikAnimationContainer @ref="@SortContainerRef" Width="100%" Height="97%" AnimationType="@AnimationType.SlideLeft" Class="k-popup filter-container">
+            <div style="width: 65%; background-color: #000000; opacity: 0.5;" @onclick="@(async() => { SortContainerRef?.ToggleAsync(); _advancedSortShown = false; })">
+            </div>
+            <div style="width: 35%; background-color: white;display: flex; flex-direction: column; justify-content: space-between; padding: 12px;">
+                <TelerikRadioGroup Data="@OrderData"
+                                ValueChanged="@((string value) => OrderChanged(value))"
+                                Value="@_orderBy" />
+            </div>
+        </TelerikAnimationContainer>
+    </div>
+</div>
+
+<DocumentCreation DocumentType="@DocumentType" RefreshCallback="@GetDocumentsAsync" @ref="@DocumentCreationRef" />
+<ShareDocument @ref="@ShareDocumentRef" />
+<DeleteDocument @ref="@DeleteDocumentRef" OnDeleteDocumentCallback="@((DocumentModel document) => Documents.Remove(document))" />

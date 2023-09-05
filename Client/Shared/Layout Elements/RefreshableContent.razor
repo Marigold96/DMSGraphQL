@@ -1,0 +1,10 @@
+﻿@ChildContent
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+}

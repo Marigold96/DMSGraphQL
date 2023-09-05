@@ -1,0 +1,19 @@
+﻿@if (_isBusy)
+{
+    <TelerikLoader />
+}
+else
+{
+    <CascadingValue Value="@SetIsBusy" Name="SetIsBusy" TValue="Action<bool>">
+        @ChildContent
+    </CascadingValue>
+}
+
+<style>
+
+    .k-loader {
+        display: flex !important;
+        justify-content:center;
+    }
+
+</style>

@@ -1,0 +1,14 @@
+﻿
+.middle-box-parent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.middle-box {
+    width: 400px;
+    box-shadow: 5px 10px 18px #888888;
+    padding: 20px;
+}

@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using global::Common.Models;
+@using static Telerik.Blazor.ThemeConstants.AutoComplete;
+
+<div class="drawer-container">
+    <div class="custom-toolbar" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <TelerikButton OnClick="@ToggleDrawer" Icon="@SvgIcon.Menu" FillMode="@FillMode.Flat"></TelerikButton>
+            <span class="drawer-title">@SelectedItem?.DocumentType?.Name</span>
+        </div>
+
+        <div>
+            <AuthorizeView Roles="Administrator">
+                <TelerikButton Icon="@SvgIcon.Gear" FillMode="@FillMode.Flat" OnClick="@UserInfoClick" />
+            </AuthorizeView>
+
+            <TelerikAvatar Type="@AvatarType.Text">
+                @UserInfo
+            </TelerikAvatar>
+        </div>
+    </div>
+    <TelerikDrawer @ref="@DrawerRef"
+                   Data="Data"
+                   TItem="DrawerItemModel"
+                   Mode="@DrawerMode.Push"
+                   MiniMode="true"
+                   TextField="Name"
+                   IconField="Icon"
+                   Expanded="@_expanded"
+                   SelectedItem="SelectedItem"
+                   SelectedItemChanged="@((DrawerItemModel selectedItem) => SelectedItemChangedHandler(selectedItem))">
+        <DrawerContent>
+            @ChildContent
+        </DrawerContent>
+    </TelerikDrawer>
+</div>

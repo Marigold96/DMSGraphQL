@@ -1,0 +1,12 @@
+﻿@layout AuthLayout
+
+@page "/login"
+@page "/login/{UpdatePassword:bool}"
+
+<Loader>
+    <LoginForm ChangePassword="UpdatePassword"/>
+</Loader>
+
+@code{
+    [Parameter] public bool? UpdatePassword { get; set; }
+}

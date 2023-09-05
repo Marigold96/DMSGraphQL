@@ -1,0 +1,17 @@
+﻿@inherits LayoutComponentBase
+
+ <TelerikRootComponent>
+    <NotificationComponent @ref="@Notification" />
+
+    <CascadingValue Value="@Notification" TValue="NotificationComponent">
+        <div class="middle-box-parent">
+            <div class="middle-box">
+                @Body
+            </div>
+        </div>
+    </CascadingValue>
+</TelerikRootComponent>
+
+@code {
+    public NotificationComponent Notification { get; set; } = default!;
+}

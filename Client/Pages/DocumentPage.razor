@@ -1,0 +1,24 @@
+﻿@page "/"
+@page "/documents/{DocumentType}"
+
+@if (string.IsNullOrEmpty(DocumentType))
+{
+    <TelerikLoader />
+}
+else
+{
+    <TelerikTileLayout Columns="3">
+        <TileLayoutItems>
+            <TileLayoutItem>
+                <Content>
+                    <DocumentCollection DocumentType="@DocumentType" OnSelectedItemChangedCallback="@OnSelectedItemChanged" />
+                </Content>
+            </TileLayoutItem>
+            <TileLayoutItem ColSpan="2">
+                <Content>
+                    <DocumentPreview DocumentId="@SelectedDocument?.Id" />
+                </Content>
+            </TileLayoutItem>
+        </TileLayoutItems>
+    </TelerikTileLayout>
+}

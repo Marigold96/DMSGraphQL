@@ -1,0 +1,114 @@
+﻿@using global::Common.Models;
+@using static Telerik.Blazor.ThemeConstants.AutoComplete;
+
+<TelerikDialog ShowCloseButton="true"
+               Width="500px"
+               Height="auto"
+               ButtonsLayout="@DialogButtonsLayout.End"
+               @bind-Visible="@_isVisible">
+    <DialogTitle>
+        <strong>
+            @if (_isEditDialog)
+            {
+                <span>Izmeniti dokument</span>
+            }
+            else
+            {
+                <span>Kreirati dokument</span>   
+            }
+        </strong>
+    </DialogTitle>
+    <DialogContent>
+        <div class="k-form k-form-md k-form-vertical">
+            <div class="mb-2 k-form-field">
+                <TelerikFloatingLabel Text="Naziv*" Class="custom-label">
+                    <div class="k-form-field-wrap">
+                        <TelerikTextBox FillMode="@FillMode.Flat" @bind-Value="@Document.Name" />
+                    </div>
+                </TelerikFloatingLabel>
+            </div>
+
+            <div class="mb-2 k-form-field">
+                <TelerikFloatingLabel Text="@(DocumentTypeValidation ? "" : "Tip*")" Class="custom-label">
+                    <div class="k-form-field-wrap">
+                        <TelerikComboBox Data="@DocumentTypes"
+                                         FillMode="@FillMode.Flat"
+                                         Enabled="@(!DocumentTypeValidation)"
+                                         TItem="DocumentTypeModel"
+                                         TValue="Guid"
+                                         TextField="@(nameof(DocumentTypeModel.Name))"
+                                         ValueField="@(nameof(DocumentTypeModel.Id))"
+                                         Value="@SelectedDocumentType.Id.Value"
+                                         ValueChanged="@DocumentTypeChangedHandler">
+                            <ComboBoxSettings>
+                                <ComboBoxPopupSettings Class="combo-popup" Height="auto" MaxHeight="200px" />
+                            </ComboBoxSettings>
+                        </TelerikComboBox>
+                    </div>
+                </TelerikFloatingLabel>
+            </div>
+
+            <div class="file-input mb-2 mt-4" style="justify-content: flex-end;">
+                <label for="inputFile"
+                       id="input-file-label"
+                       @ondragleave="ResetDropZoneBackground"
+                       @ondragover="ChangeDropZoneBackground"
+                       @ondrop="ResetDropZoneBackground"
+                       @ref="_dropZone">
+                    <RefreshableContent @ref="@FileNameRef">
+                        @SelectedFileName
+                    </RefreshableContent>
+                    <InputFile OnChange="@OnFileUploadHandler" @attributes="_attributes" accept="@AllowedExtensions" />
+                </label>
+            </div>
+        </div>
+    </DialogContent>
+    <DialogButtons>
+        <TelerikButton OnClick="@Cancel">
+            Otkazati
+        </TelerikButton>
+        @if (_isEditDialog)
+        {
+            <TelerikButton Icon="@SvgIcon.Pencil" ThemeColor="primary" OnClick="@UpdateDocumentAsync">
+                Izmeniti
+            </TelerikButton>
+        }
+        else
+        {
+            <TelerikButton Icon="@SvgIcon.Save" ThemeColor="primary" OnClick="@CreateDocumentAsync">
+                Sačuvati
+            </TelerikButton>
+        }
+    </DialogButtons>
+</TelerikDialog>
+
+<style>
+    .file-input {
+        border: dashed 1px;
+        display: flex;
+        position: relative;
+        text-align: center;
+        opacity: 0.8;
+        height: 80px;
+    }
+
+    #input-file-label {
+        position: absolute;
+        white-space: pre-line;
+        margin: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        align-items: center;
+        font-weight: normal;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: grid;
+    }
+
+    .combo-popup {
+        height: auto !important;
+        max-height: 200px !important;
+    }
+</style>

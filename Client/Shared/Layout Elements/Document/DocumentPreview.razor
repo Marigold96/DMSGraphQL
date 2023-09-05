@@ -1,0 +1,8 @@
+﻿@if (_isBusy)
+{
+    <TelerikLoader />
+}
+else if (_documentContent != null)
+{
+    <iframe src="@_documentContent" style="width: 100%; height: 100%;"/>
+}

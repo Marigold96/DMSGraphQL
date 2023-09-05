@@ -1,0 +1,12 @@
+﻿@using global::Common.Models;
+<TelerikDialog @bind-Visible="@Visible"
+               Title="Brisanje dokumenta"
+               ButtonsLayout="@DialogButtonsLayout.End">
+    <DialogContent>
+        <div class="mb-2">Izabrani dokument biće trajno obrisan. Da li želite da nastavite sa izabranom akcijom?</div>
+    </DialogContent>
+    <DialogButtons>
+        <TelerikButton OnClick="@(() => { Visible = false; })">Odustani</TelerikButton>
+        <TelerikButton OnClick="@DeleteDocumentAsync" Icon="@SvgIcon.Trash" ThemeColor="primary">Obriši</TelerikButton>
+    </DialogButtons>
+</TelerikDialog>

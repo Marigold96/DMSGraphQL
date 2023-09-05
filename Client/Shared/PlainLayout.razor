@@ -1,0 +1,91 @@
+﻿@inherits LayoutComponentBase
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using global::Common.Extensions;
+@using static Telerik.Blazor.ThemeConstants.AutoComplete;
+@inject NavigationManager NavigationManager
+@inject IDataProvider DataProvider
+
+<TelerikRootComponent>
+    <div class="page">
+        <div class="drawer-container">
+            <div class="custom-toolbar" style="display: flex; justify-content: space-between;">
+                <AuthorizeView Roles="Administrator">
+                    <TelerikButton Icon="@SvgIcon.Home" FillMode="@FillMode.Flat" OnClick="@(()=> NavigationManager.NavigateTo(NavigationManager.BaseUri))" />
+                </AuthorizeView>
+                <TelerikAvatar Type="@AvatarType.Text">
+                    @_userInfo
+                </TelerikAvatar>
+            </div>
+            <div style="flex: 1 1 auto;">
+                @Body
+            </div>
+        </div>
+    </div>
+</TelerikRootComponent>
+
+@code {
+    
+    private string _userInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userMe = await DataProvider.UserMe();
+        if (userMe != null)
+        {
+            _userInfo = userMe.Initials();
+        }
+        await base.OnInitializedAsync();
+    }
+
+}
+
+
+<style>
+    .page {
+        position: absolute;
+        display: flex;
+        height: 100%;
+        width: 100%;
+    }
+
+    .drawer-container {
+        margin: 0px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .drawer-title {
+        margin-left: 20px;
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    .k-drawer-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .k-drawer-content {
+        flex: 1 1 auto;
+        height: 100%;
+        display: flex;
+        width: 100%;
+    }
+
+    .custom-toolbar {
+        width: 100%;
+        background-color: #f6f6f6;
+        line-height: 10px;
+        border-bottom: inset;
+        border-bottom-width: 1px;
+        padding: 3px 8px;
+        color: #656565;
+    }
+
+    .k-tilelayout {
+        height: 100%;
+    }
+</style>

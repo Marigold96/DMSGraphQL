@@ -1,0 +1,57 @@
+﻿@page "/users"
+@layout PlainLayout
+
+@using Client.Shared.Layout_Elements
+@using global::Common.Extensions;
+
+<TelerikTileLayout Columns="2">
+    <TileLayoutItems>
+        <TileLayoutItem>
+            <Content>
+                <TelerikListView Data="@Users">
+                    <Template>
+                        <div class="p-1 d-flex @(context == SelectedItem ? "selected" : "")"
+                             style="border-bottom: 1px solid lightgrey;"
+                             @onclick="@((MouseEventArgs mouseEventArgs) => OnSelectedItemChanged(context))">
+
+                            <div>
+                                <TelerikAvatar Type="@AvatarType.Text">
+                                    @context.Initials()
+                                </TelerikAvatar>
+                            </div>
+                            <div style="align-self: center;">
+                                @context.Description (@context.Name)
+                            </div>
+
+                        </div>
+                    </Template>
+                </TelerikListView>
+            </Content>
+        </TileLayoutItem>
+        <TileLayoutItem>
+            <Content>
+                <UserDetails UserModel="@SelectedItem" />
+            </Content>
+        </TileLayoutItem>
+    </TileLayoutItems>
+</TelerikTileLayout>
+
+<style>
+    .selected {
+        background-color: lightgray;
+    }
+
+    .document-container .k-animation-container {
+        position: absolute;
+        top: 0;
+    }
+
+    .filter-container {
+        background-color: transparent;
+        display: -webkit-box;
+    }
+
+    .k-animation-container .k-child-animation-container {
+        height: 100%;
+    }
+</style>

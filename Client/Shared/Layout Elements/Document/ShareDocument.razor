@@ -1,0 +1,23 @@
+﻿@using global::Common.Models;
+<TelerikDialog @bind-Visible="@Visible"
+               Title="Podelite dokument"
+               ButtonsLayout="@DialogButtonsLayout.End">
+    <DialogContent>
+        <div class="mb-2">Izaberite korisnika sa kojim želite da podelite dokument <i> '@Document.Name' </i>.</div>
+        <TelerikAutoComplete Data="@Users"
+                         Value="@AutoCompleteValue"
+                         ValueChanged="@OnValueChangedHandler"
+                         ValueField="@nameof(UserModel.Description)"
+                         Filterable="true"
+                         Placeholder="Pretražite korisnike..."
+                         Width="100%">
+            <AutoCompleteSettings>
+                <AutoCompletePopupSettings Class="combo-popup" Height="auto" MaxHeight="200px" />
+            </AutoCompleteSettings>
+        </TelerikAutoComplete>
+    </DialogContent>
+    <DialogButtons>
+        <TelerikButton OnClick="@(() => { Visible = false; })">Odustani</TelerikButton>
+        <TelerikButton OnClick="@ShareDocumentAsync" Icon="@SvgIcon.Share" ThemeColor="primary">Podeli</TelerikButton>
+    </DialogButtons>
+</TelerikDialog>

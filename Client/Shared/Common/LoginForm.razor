@@ -1,0 +1,60 @@
+﻿@using global::Common.Models;
+
+@if (_passwordChanging)
+{
+    <TelerikForm Model="@ChangePasswordInfo"
+             OnValidSubmit="@ChangePasswordAsync"
+             Size="@ThemeConstants.Form.Size.Small">
+        <FormValidation>
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+        </FormValidation>
+        <FormItems>
+            <FormItem Field="@nameof(ChangePasswordData.OldPassword)">
+                <Template>
+                    <label for="pass" class="k-label k-form-label">Trenutna šifra*:</label>
+                    <TelerikTextBox Id="pass" @bind-Value="@ChangePasswordInfo.OldPassword" Password="true"></TelerikTextBox>
+                    <TelerikValidationMessage For="@(() => ChangePasswordInfo.OldPassword)"></TelerikValidationMessage>
+                </Template>
+            </FormItem>
+            <FormItem Field="@nameof(ChangePasswordData.NewPassword)">
+                <Template>
+                    <label for="pass" class="k-label k-form-label">Nova šifra*:</label>
+                    <TelerikTextBox Id="pass" @bind-Value="@ChangePasswordInfo.NewPassword" Password="true"></TelerikTextBox>
+                    <TelerikValidationMessage For="@(() => ChangePasswordInfo.NewPassword)"></TelerikValidationMessage>
+                </Template>
+            </FormItem>
+        </FormItems>
+        <FormButtons>
+            <TelerikButton ButtonType="ButtonType.Submit" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Promena šifre</TelerikButton>
+        </FormButtons>
+    </TelerikForm>
+}
+else
+{
+    <TelerikForm Model="@LoginInputData"
+             OnValidSubmit="@LoginAsync"
+             Size="@ThemeConstants.Form.Size.Small">
+        <FormValidation>
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+        </FormValidation>
+        <FormItems>
+            <FormItem Field="@nameof(LoginInput.UserName)"></FormItem>
+            <FormItem Field="@nameof(LoginInput.Password)">
+                <Template>
+                    <label for="pass" class="k-label k-form-label">Šifra*:</label>
+                    <TelerikTextBox Id="pass" @bind-Value="@LoginInputData.Password" Password="true"></TelerikTextBox>
+                    <TelerikValidationMessage For="@(() => LoginInputData.Password)"></TelerikValidationMessage>
+                </Template>
+            </FormItem>
+        </FormItems>
+        <FormButtons>
+            <TelerikButton ButtonType="ButtonType.Submit" ThemeColor="@(ThemeConstants.Button.ThemeColor.Primary)">Prijava</TelerikButton>
+        </FormButtons>
+    </TelerikForm>
+}
+
+<style>
+    .k-actions-start.k-form-buttons {
+        justify-content: center;
+    }
+</style>
